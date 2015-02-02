@@ -1,0 +1,115 @@
+@()
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Dice game</title>
+
+    <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))'>
+    <link rel='stylesheet' href='@routes.Assets.at("stylesheets/main.css")'>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Dice Game</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container" ng-app="dice-game">
+
+    <div ng-switch on="page">
+
+        <div ng-switch-when="create" ng-controller="CreateGameController">
+            <div class="page-header">
+                <h1>What do you want to do?</h1>
+            </div>
+            <p>
+                <button ng-disabled="loading" type="button" class="btn btn-lg btn-primary" ng-click="createNewGame()">Create new game, of course</button>
+            </p>
+        </div>
+
+        <div ng-switch-when="choose_players" ng-controller="StartGameController">
+            <div class="page-header">
+                <h1>How many players?</h1>
+            </div>
+            <div class="col-lg-3">
+                <form>
+                    <div class="form-group">
+                        <input ng-disabled="loading" class="form-control" type="number" ng-model="playersCount" />
+                    </div>
+                </form>
+                <button ng-disabled="loading" id="start-game" type="button" class="btn btn-lg btn-primary" ng-click="startGame()">Start game</button>
+            </div>
+        </div>
+
+        <div ng-switch-when="game" ng-controller="GameController">
+            <div class="page-header">
+                <h1>Game <small>{{gameId}}</small></h1>
+            </div>
+            <div class="row" ng-show="gameFinished">
+                <div class="alert alert-success">
+                    <strong>Game finished!</strong> All winners have been marked.
+                    <button type="button" class="btn btn-sm btn-primary" ng-click="playAgain()">Play again?</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3">
+                    <form>
+                        <div class="form-group">
+                            <label>Who's rolling?</label>
+                            <select ng-disabled="gameFinished" class="form-control" ng-model="selectedPlayer" ng-options="player for player in game.players"></select>
+                        </div>
+                        <button id="roll" ng-disabled="gameFinished" type="button" class="btn btn-lg btn-primary" ng-click="roll()">Roll!</button>
+                    </form>
+                </div>
+                <div class="col-lg-3">
+                    <div ng-hide="gameFinished">
+                        <p>Current player: <strong>{{game.turn.currentPlayer}}</strong></p>
+                        <p>Time left: <strong>{{game.turn.secondsLeft}}</strong></p>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <ul class="list-group">
+                        <li class="list-group-item" ng-class="isWinner(score.player) ? 'list-group-item-success' : ''" ng-repeat="score in game.scores">
+                            <span class="badge">{{score.score}}</span>
+                            {{score.player}}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="row">
+            <div class="col-lg-12">
+                <hr />
+                <p>Full source code available on <a href="https://github.com/LukasGasior1/event-sourced-dice-game">GitHub</a></p>
+                <p>More details available on <a href="http://blog.scalac.io/">ScalaC Team Blog</a></p>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<script src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))' type='text/javascript'></script>
+<script src='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.js"))' type='text/javascript'></script>
+<script src='@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))' type='text/javascript'></script>
+<script src='@routes.Assets.at("javascripts/app.js")' type='text/javascript'></script>
+<script src='@routes.Assets.at("javascripts/controllers/create_game_controller.js")' type='text/javascript'></script>
+<script src='@routes.Assets.at("javascripts/controllers/start_game_controller.js")' type='text/javascript'></script>
+<script src='@routes.Assets.at("javascripts/controllers/game_controller.js")' type='text/javascript'></script>
+<script src='@routes.Assets.at("javascripts/services/event_service.js")' type='text/javascript'></script>
+<script src='@routes.Assets.at("javascripts/services/command_service.js")' type='text/javascript'></script>
+</body>
+</html>
