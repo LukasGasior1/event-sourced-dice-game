@@ -11,7 +11,7 @@ object Game {
 sealed trait Game extends AggregateRoot[Game, GameEvent] {
   def id: GameId
 
-  def handleCommand(command: GameCommand): GameOrViolation = command match {
+  def handleCommand(command: GameCommand): Either[GameRulesViolation, Game] = command match {
     case StartGame(players) => this match {
       case ug: UninitializedGame => ug.start(players)
       case _ => GameAlreadyStartedViolation
@@ -39,7 +39,7 @@ case class UninitializedGame(
     override val uncommittedEvents: List[GameEvent] = Nil)
   extends Game {
 
-  def start(players: Seq[PlayerId]): GameOrViolation =
+  def start(players: Seq[PlayerId]): Either[GameRulesViolation, Game] =
     if (players.size < 2)
       NotEnoughPlayersViolation
     else {
@@ -70,7 +70,7 @@ case class RunningGame(
     override val uncommittedEvents: List[GameEvent] = Nil)
   extends InitializedGame {
 
-  def roll(player: PlayerId): GameOrViolation = {
+  def roll(player: PlayerId): Either[GameRulesViolation, Game] = {
     if (turn.currentPlayer == player) {
       val rolledNumber = Random.nextInt(6) + 1
       val diceRolled = DiceRolled(id, rolledNumber)

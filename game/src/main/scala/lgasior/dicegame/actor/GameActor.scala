@@ -38,7 +38,7 @@ class GameActor(id: GameId) extends PersistentActor with ActorLogging {
     }
   }
 
-  def handleResult(result: GameOrViolation) = result match {
+  def handleResult(result: Either[GameRulesViolation, Game]) = result match {
     case Right(updatedGame) =>
       sender() ! CommandAccepted
       handleChanges(updatedGame)
