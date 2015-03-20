@@ -72,7 +72,7 @@ case class RunningGame(
 
   def roll(player: PlayerId): Either[GameRulesViolation, Game] = {
     if (turn.currentPlayer == player) {
-      val rolledNumber = Random.nextInt(6) + 1
+      val rolledNumber = randomBetween(1, 6)
       val diceRolled = DiceRolled(id, rolledNumber)
       nextPlayerOpt match {
         case Some(nextPlayer) =>
@@ -87,6 +87,8 @@ case class RunningGame(
       NotCurrentPlayerViolation
     }
   }
+
+  def randomBetween(min: Int, max: Int) = Random.nextInt(max - min + 1) + min
 
   def bestPlayers: Set[PlayerId] = {
     val highest = highestRolledNumber
