@@ -50,7 +50,7 @@ object MainController extends Controller {
       .map {
         case res if res.status == ACCEPTED => Accepted
         case res if res.status == BAD_REQUEST => BadRequest(res.body)
-        case res => println(res.status); println(res.body); InternalServerError
+        case res => InternalServerError
       }
       .recover { case _ => InternalServerError }
   }
